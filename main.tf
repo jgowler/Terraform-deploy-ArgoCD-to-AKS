@@ -12,14 +12,14 @@ module "KeyVault" {
 module "AKS" {
   source              = "./Modules/AKS"
   resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.resource_group.project.location
+  location            = data.azurerm_resource_group.project.location
   clustername         = var.clustername
   common_tags         = var.common_tags
 }
 module "Namespace" {
   source              = "./Modules/Namespace"
   resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.resource_group.project.location
+  location            = data.azurerm_resource_group.project.location
   common_tags         = var.common_tags
 }
 # Continue with setting up ArgoCD module
@@ -29,18 +29,18 @@ module "ArgoCD" {
   namespace           = module.Namespace.Namespace
   admin_secret        = module.KeyVault.admin_secret
   resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.resource_group.project.location
+  location            = data.azurerm_resource_group.project.location
   common_tags         = var.common_tags
 }
 module "Ingress" {
   source              = "./Modules/Ingress"
   resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.resource_group.project.location
+  location            = data.azurerm_resource_group.project.location
   common_tags         = var.common_tags
 }
 module "GitOps" {
   source              = "./Modules/GitOps"
   resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.resource_group.project.location
+  location            = data.azurerm_resource_group.project.location
   common_tags         = var.common_tags
 }

@@ -8,6 +8,3 @@ variable "location" {
 variable "common_tags" {
   type = map(string)
 }
-variable "common_tags" {
-  type = map(string)
-}
