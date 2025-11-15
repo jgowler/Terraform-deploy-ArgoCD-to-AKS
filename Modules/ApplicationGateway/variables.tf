@@ -8,3 +8,12 @@ variable "location" {
 variable "common_tags" {
   type = map(string)
 }
+variable "vnet" {
+  type = string
+}
+variable "subnet_id" {
+  type = string
+}
+variable "public_ip_id" {
+  type = string
+}

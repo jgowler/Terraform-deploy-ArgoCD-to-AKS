@@ -32,10 +32,13 @@ module "ArgoCD" {
   location            = data.azurerm_resource_group.project.location
   common_tags         = var.common_tags
 }
-module "Ingress" {
-  source              = "./Modules/Ingress"
+module "ApplicationGateway" {
+  source              = "./Modules/ApplicationGateway"
   resource_group_name = data.azurerm_resource_group.project.name
   location            = data.azurerm_resource_group.project.location
+  vnet                = module.AKS.azurerm_virtual_network.name
+  subnet_id           = module.AKS.azurerm_subnet.id
+  public_ip_id        = module.AKS.azurerm_public_ip
   common_tags         = var.common_tags
 }
 module "GitOps" {

@@ -11,3 +11,12 @@ output "cluster_location" {
 output "aks_service_principal" {
   value = azurerm_kubernetes_cluster.aks_cluster.identity[0].principal_id
 }
+output "azurerm_virtual_network" {
+  value = azurerm_virtual_network.aks_vnet.name
+}
+output "azurerm_subnet" {
+  value = azurerm_subnet.aks_subnet.name
+}
+output "azurerm_public_ip" {
+  value = azurerm_public_ip.ApplicationGateway.id
+}

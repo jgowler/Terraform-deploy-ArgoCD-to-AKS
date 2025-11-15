@@ -44,13 +44,18 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     os_sku         = "Ubuntu"
     vnet_subnet_id = azurerm_subnet.aks_subnet.id
 
-    tags = {
-      DeployedBy = "Terraform",
-      Type       = "AKSNode"
-    }
+    tags = var.common_tags
 
   }
 }
+
+resource "azurerm_public_ip" "ApplicationGateway" {
+  name                = "pip-applicationgateway"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  allocation_method   = "Static"
+}
+
 ### Log analytics workspace
 resource "azurerm_log_analytics_workspace" "aks_law" {
   name                = "akslaw"
