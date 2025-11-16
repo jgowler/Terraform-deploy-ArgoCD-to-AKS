@@ -18,3 +18,6 @@ variable "kubeconfig" {
 variable "admin_secret" {
   type = string
 }
+variable "argocd_repo" {
+  type = string
+}

@@ -20,3 +20,6 @@ output "azurerm_subnet" {
 output "azurerm_public_ip" {
   value = azurerm_public_ip.ApplicationGateway.id
 }
+output "appgw_subnet" {
+  value = azurerm_subnet.appgw_subnet.id
+}

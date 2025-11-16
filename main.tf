@@ -5,6 +5,7 @@ module "KeyVault" {
   source                = "./Modules/KeyVault"
   resource_group_name   = data.azurerm_resource_group.project.name
   location              = data.azurerm_resource_group.project.location
+  argocd_admin          = var.argocd_admin
   common_tags           = var.common_tags
   tenant_id             = var.tenant_id
   aks_service_principal = module.AKS.aks_service_principal
@@ -22,7 +23,6 @@ module "Namespace" {
   location            = data.azurerm_resource_group.project.location
   common_tags         = var.common_tags
 }
-# Continue with setting up ArgoCD module
 module "ArgoCD" {
   source              = "./Modules/ArgoCD"
   kubeconfig          = module.AKS.kube_config
@@ -30,7 +30,16 @@ module "ArgoCD" {
   admin_secret        = module.KeyVault.admin_secret
   resource_group_name = data.azurerm_resource_group.project.name
   location            = data.azurerm_resource_group.project.location
+  argocd_repo         = var.argocd_repo
   common_tags         = var.common_tags
+}
+module "AGIC" {
+  source                = "./Modules/AGIC"
+  resource_group_name   = data.azurerm_resource_group.project.name
+  appgw_subnet          = module.AKS.appgw_subnet
+  repository            = var.repository
+  appgw_name            = module.ApplicationGateway.appgw_name
+  aks_service_principal = module.AKS.aks_service_principal
 }
 module "ApplicationGateway" {
   source              = "./Modules/ApplicationGateway"

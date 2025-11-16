@@ -14,3 +14,6 @@ variable "tenant_id" {
 variable "aks_service_principal" {
   type = string
 }
+variable "argocd_admin" {
+  type = string
+}

@@ -16,6 +16,12 @@ resource "azurerm_subnet" "aks_subnet" {
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
   address_prefixes     = ["12.0.0.0/21"]
 }
+resource "azurerm_subnet" "appgw_subnet" {
+  name                 = "appgwsubnet"
+  resource_group_name  = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.aks_vnet.name
+  address_prefixes     = ["12.0.1.0/27"]
+}
 
 ### AKS cluster
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
