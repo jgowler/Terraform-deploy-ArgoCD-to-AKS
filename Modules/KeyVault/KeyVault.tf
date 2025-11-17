@@ -13,17 +13,6 @@ resource "azurerm_key_vault" "this" {
   resource_group_name = var.resource_group_name
   sku_name            = "standard"
 }
-resource "azurerm_key_vault_secret" "argocd_admin" {
-  depends_on = [
-    azurerm_key_vault.this,
-    var.argocd_admin
-    ]
-
-  name         = "argocdadmin"
-  value        = var.argocd_admin
-  key_vault_id = azurerm_key_vault.this.id
-}
-
 resource "azurerm_key_vault_access_policy" "AKS" {
   depends_on = [
     azurerm_key_vault.this

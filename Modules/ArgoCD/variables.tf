@@ -20,9 +20,6 @@ variable "kubeconfig" {
     cluster_ca_certificate = string
   })
 }
-variable "admin_secret" {
-  type = string
-}
 variable "argocd_repo" {
   type = string
 }

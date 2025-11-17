@@ -25,10 +25,6 @@ resource "helm_release" "argocd" {
       value = "true"
     },
     {
-      name  = "server.admin.password"
-      value = var.admin_secret
-    },
-    {
       name  = "server.ingress.annotations.kubernetes\\.io/ingress.class"
       value = "azure/application-gateway"
     },

@@ -42,7 +42,6 @@ module "ArgoCD" {
   source              = "./Modules/ArgoCD"
   kubeconfig          = module.AKS.kube_config
   namespace           = module.Namespace.Namespace
-  admin_secret        = module.KeyVault.admin_secret
   resource_group_name = data.azurerm_resource_group.project.name
   location            = data.azurerm_resource_group.project.location
   argocd_repo         = var.argocd_repo
@@ -52,10 +51,10 @@ module "AGIC" {
   depends_on = [
     module.ApplicationGateway
   ]
-  
+
   source                 = "./Modules/AGIC"
   resource_group_name    = data.azurerm_resource_group.project.name
-  agic_service_principal = azurerm_user_assigned_identity.principal_id
+  agic_service_principal = azurerm_user_assigned_identity.agic_identity.principal_id
   appgw_subnet           = module.AKS.appgw_subnet
   repository             = var.repository
   appgw_name             = module.ApplicationGateway.appgw_name
@@ -66,7 +65,7 @@ module "ApplicationGateway" {
   resource_group_name    = data.azurerm_resource_group.project.name
   location               = data.azurerm_resource_group.project.location
   aks_service_principal  = module.AKS.aks_service_principal
-  agic_service_principal = azurerm_user_assigned_identity.principal_id
+  agic_service_principal = azurerm_user_assigned_identity.agic_identity.principal_id
   vnet_name              = module.AKS.azurerm_virtual_network
   subnet_id              = module.AKS.appgw_subnet
   public_ip_id           = module.AKS.azurerm_public_ip
