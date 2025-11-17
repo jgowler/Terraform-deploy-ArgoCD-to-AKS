@@ -16,11 +16,11 @@ resource "helm_release" "agic" {
     },
     {
       name  = "armAuth.type"
-      value = "managedIdentity"
+      value = "servicePrincipal"
     },
     {
-      name  = "armAuth.identityId"
-      value = var.aks_service_principal
+      name  = "armAuth.identityClientId"
+      value = var.agic_service_principal
     },
     {
       name  = "verbosityLevel"

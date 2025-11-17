@@ -15,7 +15,8 @@ resource "azurerm_key_vault" "this" {
 }
 resource "azurerm_key_vault_secret" "argocd_admin" {
   depends_on = [
-    azurerm_key_vault.this
+    azurerm_key_vault.this,
+    var.argocd_admin
     ]
 
   name         = "argocdadmin"

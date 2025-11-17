@@ -17,3 +17,9 @@ variable "subnet_id" {
 variable "public_ip_id" {
   type = string
 }
+variable "aks_service_principal" {
+  type = string
+}
+variable "agic_service_principal" {
+  type = string
+}

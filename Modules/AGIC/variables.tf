@@ -13,3 +13,6 @@ variable "appgw_name" {
 variable "aks_service_principal" {
   type = string
 }
+variable "agic_service_principal" {
+  type = string
+}

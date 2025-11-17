@@ -72,3 +72,13 @@ resource "azurerm_application_gateway" "AKS" {
     ]
   }
 }
+resource "azurerm_role_assignment" "agic_appgw" {
+  scope = azurerm_application_gateway.AKS.id
+  role_definition_name = "Contributer"
+  principal_id = var.agic_service_principal
+}
+resource "azurerm_role_assignment" "agic_subnet" {
+  scope = var.subnet_id
+  role_definition_name = "Reader"
+  principal_id = var.agic_service_principal
+}

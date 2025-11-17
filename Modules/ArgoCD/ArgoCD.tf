@@ -1,3 +1,13 @@
+data "kubernetes_secret" "argocd_admin" {
+  metadata {
+    name = "argocd-secret"
+    namespace = var.namespace
+  }
+  depends_on = [
+    helm_release.argocd
+  ]
+}
+###
 resource "helm_release" "argocd" {
   name       = "argocd"
   chart      = "${path.module}/Charts/argo-cd"
