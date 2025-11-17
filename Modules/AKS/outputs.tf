@@ -1,5 +1,5 @@
 output "kube_config" {
-  value     = azurerm_kubernetes_cluster.aks_cluster.kube_config_raw
+  value     = azurerm_kubernetes_cluster.aks_cluster.kube_config[0]
   sensitive = true
 }
 output "cluster_name" {
@@ -22,4 +22,10 @@ output "azurerm_public_ip" {
 }
 output "appgw_subnet" {
   value = azurerm_subnet.appgw_subnet.id
+}
+output "vnet_id" {
+  value = azurerm_virtual_network.aks_vnet.id
+}
+output "aks_subnet_id" {
+  value = azurerm_subnet.aks_subnet.id
 }

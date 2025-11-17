@@ -1,8 +1,9 @@
 resource "helm_release" "argocd" {
   name       = "argocd"
-  chart      = "argo-cd"
+  chart      = "${path.module}/Charts/argo-cd"
   namespace  = var.namespace
-  repository = var.argocd_repo
+  version    = "8.1.2"
+
 
   set = [
     {

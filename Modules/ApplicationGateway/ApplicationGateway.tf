@@ -1,11 +1,11 @@
 locals {
-  backend_address_pool_name      = "${var.vnet}-beap"
-  frontend_port_name             = "${var.vnet}-feport"
-  frontend_ip_configuration_name = "${var.vnet}-feip"
-  http_setting_name              = "${var.vnet}-be-htst"
-  listener_name                  = "${var.vnet}-httplstn"
-  request_routing_rule_name      = "${var.vnet}-rqrt"
-  redirect_configuration_name    = "${var.vnet}-rdrcfg"
+  backend_address_pool_name      = "${var.vnet_name}-beap"
+  frontend_port_name             = "${var.vnet_name}-feport"
+  frontend_ip_configuration_name = "${var.vnet_name}-feip"
+  http_setting_name              = "${var.vnet_name}-be-htst"
+  listener_name                  = "${var.vnet_name}-httplstn"
+  request_routing_rule_name      = "${var.vnet_name}-rqrt"
+  redirect_configuration_name    = "${var.vnet_name}-rdrcfg"
 }
 resource "azurerm_application_gateway" "AKS" {
   name                = "ag-aks"
@@ -15,7 +15,7 @@ resource "azurerm_application_gateway" "AKS" {
   sku {
     name     = "Standard_v2"
     tier     = "Standard_v2"
-    capacity = 2
+    capacity = 1
   }
 
   gateway_ip_configuration {
@@ -60,5 +60,15 @@ resource "azurerm_application_gateway" "AKS" {
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
+  }
+  lifecycle {
+    ignore_changes = [
+      tags,
+      backend_address_pool,
+      backend_http_settings,
+      http_listener,
+      probe,
+      request_routing_rule,
+    ]
   }
 }

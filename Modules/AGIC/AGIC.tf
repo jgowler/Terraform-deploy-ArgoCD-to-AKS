@@ -1,7 +1,7 @@
 resource "helm_release" "agic" {
   name             = "ingress-appgw"
-  repository       = var.repository
-  chart            = "azure-application-gateway-kubernetes-ingress"
+  repository       = "oci://mcr.microsoft.com/azure-application-gateway/charts"
+  chart            = "ingress-azure"
   namespace        = "agic-namespace"
   create_namespace = true
 
@@ -25,6 +25,10 @@ resource "helm_release" "agic" {
     {
       name  = "verbosityLevel"
       value = 3
+    },
+    {
+      name = "appgw.ingressClass"
+      value = "azure/application-gateway"
     }
   ]
 }

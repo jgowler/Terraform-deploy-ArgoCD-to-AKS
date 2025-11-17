@@ -8,7 +8,7 @@ variable "location" {
 variable "common_tags" {
   type = map(string)
 }
-variable "vnet" {
+variable "vnet_name" {
   type = string
 }
 variable "subnet_id" {
