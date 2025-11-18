@@ -17,13 +17,7 @@ variable "tenant_id" {
 variable "clustername" {
   type = string
 }
-variable "repository" {
-  type = string
-}
 variable "argocd_repo" {
-  type = string
-}
-variable "argocd_admin" {
   type = string
 }
 variable "common_tags" {

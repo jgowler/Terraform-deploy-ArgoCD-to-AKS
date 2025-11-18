@@ -15,3 +15,9 @@ variable "ssh_public_key" {
 variable "common_tags" {
   type = map(string)
 }
+variable "appgw_id" {
+  type = string
+}
+variable "appgw_name" {
+  type = string
+}

@@ -6,25 +6,37 @@ resource "azurerm_virtual_network" "aks_vnet" {
   address_space       = ["12.0.0.0/16"]
 
   tags = {
-    DeployedBy = "Terraform",
+    DeployedBy = "Terraform"
     Type       = "VNET"
   }
 }
+
 resource "azurerm_subnet" "aks_subnet" {
   name                 = "akssubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
   address_prefixes     = ["12.0.0.0/24"]
 }
+
 resource "azurerm_subnet" "appgw_subnet" {
   name                 = "appgwsubnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.aks_vnet.name
-  address_prefixes     = ["12.0.1.0/27"]
+  address_prefixes     = ["12.0.1.0/24"]
+}
+
+resource "azurerm_role_assignment" "aks_to_appgw" {
+  scope                = var.appgw_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_kubernetes_cluster.aks_cluster.identity[0].principal_id
 }
 
 ### AKS cluster
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
+  depends_on = [
+    azurerm_subnet.appgw_subnet
+  ]
+
   name                              = var.clustername
   resource_group_name               = var.resource_group_name
   location                          = var.location
@@ -48,6 +60,7 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     load_balancer_sku = "standard"
     network_policy    = "calico"
   }
+
   identity {
     type = "SystemAssigned"
   }
@@ -69,16 +82,11 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     }
     tags = var.common_tags
   }
-}
 
-resource "azurerm_public_ip" "ApplicationGateway" {
-  name                = "pip-applicationgateway"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  allocation_method   = "Static"
-
-  tags = var.common_tags
-}
+  ingress_application_gateway {
+      gateway_id = var.appgw_id  
+    }
+  }
 
 ### Log analytics workspace
 resource "azurerm_log_analytics_workspace" "aks_law" {
@@ -89,7 +97,7 @@ resource "azurerm_log_analytics_workspace" "aks_law" {
   retention_in_days   = 30
 
   tags = {
-    DeployedBy = "Terraform",
+    DeployedBy = "Terraform"
     Type       = "LogAnalyticsWorkspace"
   }
 }

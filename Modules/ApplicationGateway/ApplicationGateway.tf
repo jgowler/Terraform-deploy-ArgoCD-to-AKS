@@ -7,9 +7,20 @@ locals {
   request_routing_rule_name      = "${var.vnet_name}-rqrt"
   redirect_configuration_name    = "${var.vnet_name}-rdrcfg"
 }
+
+# Create the single Public IP here
+resource "azurerm_public_ip" "appgw_pip" {
+  name                = "pip-applicationgateway"
+  resource_group_name = var.resource_group
+  location            = var.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = var.common_tags
+}
+
 resource "azurerm_application_gateway" "AKS" {
   name                = "ag-aks"
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.resource_group
   location            = var.location
 
   sku {
@@ -30,7 +41,7 @@ resource "azurerm_application_gateway" "AKS" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = var.public_ip_id
+    public_ip_address_id = azurerm_public_ip.appgw_pip.id
   }
 
   backend_address_pool {
@@ -40,7 +51,6 @@ resource "azurerm_application_gateway" "AKS" {
   backend_http_settings {
     name                  = local.http_setting_name
     cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
     port                  = 80
     protocol              = "Http"
     request_timeout       = 60
@@ -61,6 +71,7 @@ resource "azurerm_application_gateway" "AKS" {
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
   }
+
   lifecycle {
     ignore_changes = [
       tags,
@@ -72,13 +83,13 @@ resource "azurerm_application_gateway" "AKS" {
     ]
   }
 }
-resource "azurerm_role_assignment" "agic_appgw" {
-  scope = azurerm_application_gateway.AKS.id
-  role_definition_name = "Contributer"
-  principal_id = var.agic_service_principal
-}
-resource "azurerm_role_assignment" "agic_subnet" {
-  scope = var.subnet_id
-  role_definition_name = "Reader"
-  principal_id = var.agic_service_principal
+
+resource "azurerm_role_assignment" "role-contributor-rg" {
+  scope                = var.resource_group_id
+  role_definition_name = "Contributor"
+  principal_id         = var.aks_service_principal
+
+  depends_on = [
+    azurerm_application_gateway.AKS
+  ]
 }
