@@ -1,8 +1,18 @@
-variable "principal_ids" {
-  type = list(string)
-  description = "List of principal ID's from other modules"
+variable "cluster_principal_id" {
+  type = string
 }
-variable "role_assignments" {
-  type = map(list(string))
-  description = "List of permissions to be granted"
+variable "appgw_principal_id" {
+  type = string
+}
+variable "vnet_id" {
+  type = string
+}
+variable "aks_subnet_id" {
+  type = string
+}
+variable "appgw_subnet_id" {
+  type = string
+}
+variable "keyvault_id" {
+  type = string
 }

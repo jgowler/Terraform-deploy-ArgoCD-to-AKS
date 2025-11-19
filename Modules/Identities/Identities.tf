@@ -1,27 +1,48 @@
-### Role Assignments:
-locals {
-  role_assignment_list = flatten([
-    for principal_id in var.principal_ids : [
-      for role, scopes in var.role_assignments : [
-        for scope in scopes : {
-          principal_id = principal_id
-          role         = role
-          scope        = scope
-        }
-      ]
-    ]
-  ])
-
-  role_assignment_map = {
-    for ra in local.role_assignment_list :
-    "${ra.principal_id}-${ra.role}-${basename(ra.scope)}" => ra
-  }
+### Grant permissions:
+resource "azurerm_role_assignment" "aks_contributor_vnet" {
+principal_id         = var.cluster_principal_id
+role_definition_name = "Contributor"
+scope                = var.vnet_id
 }
 
-resource "azurerm_role_assignment" "assign_roles" {
-  for_each = local.role_assignment_map
+resource "azurerm_role_assignment" "aks_contributor_aks_subnet" {
+principal_id         = var.cluster_principal_id
+role_definition_name = "Contributor"
+scope                = var.aks_subnet_id
+}
 
-  principal_id         = each.value.principal_id
-  role_definition_name = each.value.role
-  scope                = each.value.scope
+resource "azurerm_role_assignment" "aks_contributor_appgw_subnet" {
+principal_id         = var.cluster_principal_id
+role_definition_name = "Contributor"
+scope                = var.appgw_subnet_id
+}
+
+resource "azurerm_role_assignment" "appgw_contributor_vnet" {
+principal_id         = var.appgw_principal_id
+role_definition_name = "Contributor"
+scope                = var.vnet_id
+}
+
+resource "azurerm_role_assignment" "appgw_contributor_aks_subnet" {
+principal_id         = var.appgw_principal_id
+role_definition_name = "Contributor"
+scope                = var.aks_subnet_id
+}
+
+resource "azurerm_role_assignment" "appgw_contributor_appgw_subnet" {
+principal_id         = var.appgw_principal_id
+role_definition_name = "Contributor"
+scope                = var.appgw_subnet_id
+}
+
+resource "azurerm_role_assignment" "aks_reader_keyvault" {
+principal_id         = var.cluster_principal_id
+role_definition_name = "Reader"
+scope                = var.keyvault_id
+}
+
+resource "azurerm_role_assignment" "appgw_reader_keyvault" {
+principal_id         = var.appgw_principal_id
+role_definition_name = "Reader"
+scope                = var.keyvault_id
 }

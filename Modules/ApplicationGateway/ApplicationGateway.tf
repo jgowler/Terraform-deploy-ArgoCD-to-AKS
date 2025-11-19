@@ -10,6 +10,10 @@ resource "azurerm_application_gateway" "appgw" {
     capacity = 1
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   gateway_ip_configuration {
     name      = "appGatewayIpConfig"
     subnet_id = var.appgw_subnet_id
