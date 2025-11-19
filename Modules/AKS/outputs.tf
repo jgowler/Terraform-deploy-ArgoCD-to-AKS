@@ -1,38 +1,17 @@
 output "kube_config" {
-  value     = azurerm_kubernetes_cluster.aks_cluster.kube_config[0]
-  sensitive = true
+  value = {
+    host                   = azurerm_kubernetes_cluster.aks.kube_config[0].host
+    client_certificate     = azurerm_kubernetes_cluster.aks.kube_config[0].client_certificate
+    client_key             = azurerm_kubernetes_cluster.aks.kube_config[0].client_key
+    cluster_ca_certificate = azurerm_kubernetes_cluster.aks.kube_config[0].cluster_ca_certificate
+  }
 }
-output "kube_admin_config" {
-  value     = azurerm_kubernetes_cluster.aks_cluster.kube_admin_config[0]
-  sensitive = true
-}
-output "kube_host" {
-  value = azurerm_kubernetes_cluster.aks_cluster.kube_config[0].host
-}
-output "cluster_name" {
-  value = azurerm_kubernetes_cluster.aks_cluster.name
-}
-output "cluster_location" {
-  value = azurerm_kubernetes_cluster.aks_cluster.location
+output "kube_config_raw" {
+  value = azurerm_kubernetes_cluster.aks.kube_config_raw
 }
 output "cluster_id" {
-  value = azurerm_kubernetes_cluster.aks_cluster.id
+  value = azurerm_kubernetes_cluster.aks.id
 }
-output "aks_service_principal" {
-  value = azurerm_kubernetes_cluster.aks_cluster.identity[0].principal_id
-}
-output "azurerm_virtual_network" {
-  value = azurerm_virtual_network.aks_vnet.name
-}
-output "azurerm_subnet" {
-  value = azurerm_subnet.aks_subnet.name
-}
-output "appgw_subnet" {
-  value = azurerm_subnet.appgw_subnet.id
-}
-output "vnet_id" {
-  value = azurerm_virtual_network.aks_vnet.id
-}
-output "aks_subnet_id" {
-  value = azurerm_subnet.aks_subnet.id
+output "cluster_principal_id" {
+  value = azurerm_kubernetes_cluster.aks.identity[0].principal_id
 }

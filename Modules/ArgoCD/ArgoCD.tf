@@ -1,40 +1,42 @@
-data "kubernetes_secret" "argocd_admin" {
-  metadata {
-    name = "argocd-secret"
-    namespace = var.namespace
+provider "helm" {
+  kubernetes = {
+    host                   = var.kubeconfig.host
+    client_certificate     = base64decode(var.kubeconfig.client_certificate)
+    client_key             = base64decode(var.kubeconfig.client_key)
+    cluster_ca_certificate = base64decode(var.kubeconfig.cluster_ca_certificate)
   }
-  depends_on = [
-    helm_release.argocd
-  ]
 }
-###
+### ArgoCD
 resource "helm_release" "argocd" {
-  name       = "argocd"
-  chart      = "${path.module}/Charts/argo-cd"
-  namespace  = var.namespace
-  version    = "8.1.2"
-
+  name = "argocd"
+  chart = var.argocd_repo
+  namespace = var.namespace
+  create_namespace = true
 
   set = [
-    {
-      name  = "server.service.type"
-      value = "ClusterIP"
-    },
-    {
-      name  = "server.ingress.enabled"
-      value = "true"
-    },
-    {
-      name  = "server.ingress.annotations.kubernetes\\.io/ingress.class"
-      value = "azure/application-gateway"
-    },
-    {
-      name  = "server.ingress.hosts[0].host"
-      value = "argocd.example.com"
-    },
-    {
-      name  = "server.ingress.hosts[0].paths[0]"
-      value = "/"
-    }
-  ]
+  {
+    name  = "server.ingress.enabled"
+    value = "true"
+  },
+  {
+    name  = "server.ingress.annotations.kubernetes\\.io/ingress.class"
+    value = "azure/application-gateway"
+  },
+  {
+    name  = "server.ingress.hosts[0].host"
+    value = "argocd.example.com"
+  },
+  {
+    name  = "server.ingress.hosts[0].paths[0]"
+    value = "/"
+  },
+  {
+    name = "server.service.type"
+    value = "ClusterIP"
+  },
+  { 
+    name = "server.ingress.enabled"
+    value = "true"
+  }
+]
 }

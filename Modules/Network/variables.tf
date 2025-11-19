@@ -1,6 +1,5 @@
 variable "resource_group_name" {
-  description = "Resource Group in subscription"
-  type        = string
+  type = string
 }
 variable "location" {
   type = string

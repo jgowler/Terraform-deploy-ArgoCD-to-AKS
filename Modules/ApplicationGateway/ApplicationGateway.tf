@@ -1,28 +1,9 @@
-locals {
-  backend_address_pool_name      = "${var.vnet_name}-beap"
-  frontend_port_name             = "${var.vnet_name}-feport"
-  frontend_ip_configuration_name = "${var.vnet_name}-feip"
-  http_setting_name              = "${var.vnet_name}-be-htst"
-  listener_name                  = "${var.vnet_name}-httplstn"
-  request_routing_rule_name      = "${var.vnet_name}-rqrt"
-  redirect_configuration_name    = "${var.vnet_name}-rdrcfg"
-}
-
-# Create the single Public IP here
-resource "azurerm_public_ip" "appgw_pip" {
-  name                = "pip-applicationgateway"
-  resource_group_name = var.resource_group
+### Application Gateway
+resource "azurerm_application_gateway" "appgw" {
+  name                = "applicationGateway"
+  resource_group_name = var.resource_group_name
   location            = var.location
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags                = var.common_tags
-}
-
-resource "azurerm_application_gateway" "AKS" {
-  name                = "ag-aks"
-  resource_group_name = var.resource_group
-  location            = var.location
-
+  
   sku {
     name     = "Standard_v2"
     tier     = "Standard_v2"
@@ -30,8 +11,8 @@ resource "azurerm_application_gateway" "AKS" {
   }
 
   gateway_ip_configuration {
-    name      = "gw-aks-ip-configuration"
-    subnet_id = var.subnet_id
+    name      = "appGatewayIpConfig"
+    subnet_id = var.appgw_subnet_id
   }
 
   frontend_port {
@@ -41,7 +22,7 @@ resource "azurerm_application_gateway" "AKS" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.appgw_pip.id
+    public_ip_address_id = var.appgw_public_ip
   }
 
   backend_address_pool {
@@ -53,7 +34,7 @@ resource "azurerm_application_gateway" "AKS" {
     cookie_based_affinity = "Disabled"
     port                  = 80
     protocol              = "Http"
-    request_timeout       = 60
+    request_timeout       = 20
   }
 
   http_listener {
@@ -65,7 +46,7 @@ resource "azurerm_application_gateway" "AKS" {
 
   request_routing_rule {
     name                       = local.request_routing_rule_name
-    priority                   = 9
+    priority                   = "100"
     rule_type                  = "Basic"
     http_listener_name         = local.listener_name
     backend_address_pool_name  = local.backend_address_pool_name
@@ -82,14 +63,4 @@ resource "azurerm_application_gateway" "AKS" {
       request_routing_rule,
     ]
   }
-}
-
-resource "azurerm_role_assignment" "role-contributor-rg" {
-  scope                = var.resource_group_id
-  role_definition_name = "Contributor"
-  principal_id         = var.aks_service_principal
-
-  depends_on = [
-    azurerm_application_gateway.AKS
-  ]
 }

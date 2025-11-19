@@ -1,18 +1,5 @@
-variable "resource_group_name" {
-  description = "Resource Group in subscription"
-  type        = string
-}
-variable "namespace" {
-  description = "ArgoCD Namespace"
-  type        = string
-}
-variable "location" {
-  type = string
-}
-variable "common_tags" {
-  type = map(string)
-}
 variable "kubeconfig" {
+  description = "AKS kubeconfig"
   type = object({
     host                   = string
     client_certificate     = string
@@ -21,5 +8,11 @@ variable "kubeconfig" {
   })
 }
 variable "argocd_repo" {
+  type = string
+}
+variable "namespace" {
+  type = string
+}
+variable "appgw_public_ip_addr" {
   type = string
 }

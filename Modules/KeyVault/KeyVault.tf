@@ -1,31 +1,19 @@
-data "azurerm_client_config" "current" {}
-
-resource "random_string" "kv_suffix" {
-  length = 6
-  upper = false
-  numeric = true
-  special = false
-}
-resource "azurerm_key_vault" "this" {
-  name                = "kv-argocd-${random_string.kv_suffix.result}"
-  location            = var.location
-  tenant_id           = var.tenant_id
+### Key Vault:
+resource "azurerm_key_vault" "kv-aks" {
+  name = "kv-aks"
   resource_group_name = var.resource_group_name
-  sku_name            = "standard"
+  location = var.location
+  tenant_id = var.tenant_id
+  sku_name = "standard"
 }
-resource "azurerm_key_vault_access_policy" "AKS" {
-  depends_on = [
-    azurerm_key_vault.this
-    ]
-  
-  key_vault_id = azurerm_key_vault.this.id
-  tenant_id    = var.tenant_id
-  object_id    = var.aks_service_principal
+resource "azurerm_key_vault_access_policy" "kvp-aks" {
+  key_vault_id = azurerm_key_vault.kv-aks.id
+  tenant_id = var.tenant_id
+  object_id = var.cluster_principal_id
 
-  key_permissions = [
-    "Get"
-  ]
   secret_permissions = [
-    "Get"
+    "Get",
+    "List",
+    "Set"
   ]
 }

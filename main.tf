@@ -1,66 +1,76 @@
+### Resource group:
 data "azurerm_resource_group" "project" {
   name = var.resource_group_name
 }
-resource "tls_private_key" "aks-ssh-key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-resource "local_file" "aks-ssh-key" {
-  filename        = "${path.module}/aks-ssh-key"
-  content         = tls_private_key.aks-ssh-key.private_key_openssh
+### SSH Key
+resource "local_sensitive_file" "ssh_private_key" {
+  content         = module.SSHKeys.ssh_private_key
   file_permission = "0600"
+  filename        = "${path.module}/SSHKeys/aks_ssh_key"
 }
-resource "azurerm_user_assigned_identity" "agic_identity" {
-  name                = "agic-identity"
+### Modules:
+module "Network" {
+  source              = "./Modules/Network"
   resource_group_name = data.azurerm_resource_group.project.name
   location            = data.azurerm_resource_group.project.location
+  common_tags         = var.common_tags
 }
+
+module "SSHKeys" {
+  source = "./Modules/SSHKeys"
+}
+
 module "KeyVault" {
-  source                = "./Modules/KeyVault"
-  resource_group_name   = data.azurerm_resource_group.project.name
-  location              = data.azurerm_resource_group.project.location
-  common_tags           = var.common_tags
-  tenant_id             = var.tenant_id
-  aks_service_principal = module.AKS.aks_service_principal
+  source               = "./Modules/KeyVault"
+  resource_group_name  = data.azurerm_resource_group.project.name
+  location             = data.azurerm_resource_group.project.location
+  tenant_id            = var.tenant_id
+  vnet_name            = module.Network.vnet_name
+  cluster_principal_id = module.AKS.cluster_principal_id
 }
+
+module "ApplicationGateway" {
+  source              = "./Modules/ApplicationGateway"
+  resource_group_name = data.azurerm_resource_group.project.name
+  location            = data.azurerm_resource_group.project.location
+  appgw_subnet_id     = module.Network.appgw_subnet_id
+  vnet_name           = module.Network.vnet_name
+  appgw_public_ip     = module.Network.appgw_public_ip
+  common_tags         = var.common_tags
+}
+
 module "AKS" {
   source              = "./Modules/AKS"
-  resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.azurerm_resource_group.project.location
-  ssh_public_key      = tls_private_key.aks-ssh-key.public_key_openssh
+  common_tags         = var.common_tags
+  aks_subnet_id       = module.Network.aks_subnet_id
   appgw_id            = module.ApplicationGateway.appgw_id
-  appgw_name          = module.ApplicationGateway.appgw_name
-  clustername         = var.clustername
-  common_tags         = var.common_tags
-}
-module "Namespace" {
-  source              = "./Modules/Namespace"
   resource_group_name = data.azurerm_resource_group.project.name
   location            = data.azurerm_resource_group.project.location
-  common_tags         = var.common_tags
+  ssh_public_key      = module.SSHKeys.ssh_public_key
 }
+
+module "Identities" {
+  source = "./Modules/Identities"
+  principal_ids = [
+    module.AKS.cluster_principal_id,
+    module.ApplicationGateway.appgw_identity_principal_id
+  ]
+  role_assignments = {
+    "Contributer" = [
+      module.Network.vnet_id,
+      module.Network.aks_subnet_id,
+      module.Network.appgw_subnet_id
+    ]
+    "Reader" = [
+      module.KeyVault.keyvault_id
+    ]
+  }
+}
+
 module "ArgoCD" {
-  source              = "./Modules/ArgoCD"
-  kubeconfig          = module.AKS.kube_config
-  namespace           = module.Namespace.Namespace
-  resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.azurerm_resource_group.project.location
-  argocd_repo         = var.argocd_repo
-  common_tags         = var.common_tags
-}
-module "ApplicationGateway" {
-  source                = "./Modules/ApplicationGateway"
-  resource_group        = data.azurerm_resource_group.project.name
-  resource_group_id     = data.azurerm_resource_group.project.id
-  location              = data.azurerm_resource_group.project.location
-  aks_service_principal = module.AKS.aks_service_principal
-  vnet_name             = module.AKS.azurerm_virtual_network
-  subnet_id             = module.AKS.appgw_subnet
-  common_tags           = var.common_tags
-}
-module "GitOps" {
-  source              = "./Modules/GitOps"
-  resource_group_name = data.azurerm_resource_group.project.name
-  location            = data.azurerm_resource_group.project.location
-  common_tags         = var.common_tags
+  source      = "./Modules/ArgoCD"
+  kubeconfig  = module.AKS.kube_config
+  argocd_repo = "./Modules/ArgoCD/Charts/argo-cd"
+  namespace   = "argocd"
+  appgw_public_ip_addr = module.Network.appgw_public_ip_addr
 }
