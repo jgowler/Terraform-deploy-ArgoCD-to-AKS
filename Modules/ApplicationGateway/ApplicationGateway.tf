@@ -88,7 +88,7 @@ resource "azurerm_application_gateway" "appgw" {
 
   request_routing_rule {
     name                       = "http8080RoutingRule"
-    priority                   = "100"
+    priority                   = "110"
     rule_type                  = "Basic"
     http_listener_name         = "http8080Listener"
     backend_address_pool_name  = local.backend_address_pool_name
