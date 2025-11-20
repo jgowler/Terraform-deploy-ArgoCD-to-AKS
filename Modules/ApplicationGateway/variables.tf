@@ -1,6 +1,9 @@
 variable "resource_group_name" {
   type = string
 }
+variable "appgw_uai_id" {
+  type = list(string)
+}
 variable "vnet_name" {
   type = string
 }

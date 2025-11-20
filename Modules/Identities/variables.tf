@@ -16,3 +16,9 @@ variable "appgw_subnet_id" {
 variable "keyvault_id" {
   type = string
 }
+variable "resource_group_name" {
+  type = string
+}
+variable "location" {
+  type = string
+}

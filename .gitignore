@@ -36,3 +36,4 @@ terraform.rc
 .terraform.lock.hcl
 aks-ssh-key
 Charts*
+*aks_ssh_key*

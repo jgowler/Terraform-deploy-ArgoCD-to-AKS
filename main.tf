@@ -33,10 +33,13 @@ module "ApplicationGateway" {
   source              = "./Modules/ApplicationGateway"
   resource_group_name = data.azurerm_resource_group.project.name
   location            = data.azurerm_resource_group.project.location
-  appgw_subnet_id     = module.Network.appgw_subnet_id
-  vnet_name           = module.Network.vnet_name
-  appgw_public_ip     = module.Network.appgw_public_ip
-  common_tags         = var.common_tags
+  appgw_uai_id = [
+    module.Identities.appgw_uai_id
+  ]
+  appgw_subnet_id = module.Network.appgw_subnet_id
+  vnet_name       = module.Network.vnet_name
+  appgw_public_ip = module.Network.appgw_public_ip
+  common_tags     = var.common_tags
 }
 
 module "AKS" {
@@ -51,6 +54,8 @@ module "AKS" {
 
 module "Identities" {
   source               = "./Modules/Identities"
+  resource_group_name  = data.azurerm_resource_group.project.name
+  location             = data.azurerm_resource_group.project.location
   cluster_principal_id = module.AKS.cluster_principal_id
   appgw_principal_id   = module.ApplicationGateway.appgw_principal_id
   vnet_id              = module.Network.vnet_id

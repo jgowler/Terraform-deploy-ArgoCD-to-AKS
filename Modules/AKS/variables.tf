@@ -1,5 +1,5 @@
 variable "ssh_public_key" {
-    type = string
+  type = string
 }
 variable "resource_group_name" {
   type = string

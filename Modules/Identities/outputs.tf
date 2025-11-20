@@ -1,3 +1,6 @@
+output "appgw_uai_id" {
+  value = azurerm_user_assigned_identity.appgwuai.id
+}
 output "aks_contributor_vnet_id" {
   description = "Role assignment ID for AKS Contributor on VNet"
   value       = azurerm_role_assignment.aks_contributor_vnet.id
