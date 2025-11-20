@@ -53,3 +53,15 @@ resource "azurerm_role_assignment" "appgw_reader_keyvault" {
   role_definition_name = "Reader"
   scope                = var.keyvault_id
 }
+
+resource "azurerm_role_assignment" "agic_appgw_contributor" {
+  scope                = var.appgw_id
+  role_definition_name = "Contributor"
+  principal_id         = azurerm_user_assigned_identity.appgwuai.principal_id
+}
+
+resource "azurerm_role_assignment" "agic_rg_reader" {
+  scope                = var.resource_group_id
+  role_definition_name = "Reader"
+  principal_id         = azurerm_user_assigned_identity.appgwuai.principal_id
+}

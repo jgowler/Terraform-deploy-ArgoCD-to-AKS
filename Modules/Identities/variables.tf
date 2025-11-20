@@ -4,6 +4,9 @@ variable "cluster_principal_id" {
 variable "appgw_principal_id" {
   type = string
 }
+variable "appgw_id" {
+  type = string
+}
 variable "vnet_id" {
   type = string
 }
@@ -17,6 +20,9 @@ variable "keyvault_id" {
   type = string
 }
 variable "resource_group_name" {
+  type = string
+} #
+variable "resource_group_id" {
   type = string
 }
 variable "location" {
