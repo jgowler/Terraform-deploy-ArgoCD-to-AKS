@@ -16,3 +16,6 @@ variable "common_tags" {
 variable "appgw_id" {
   type = string
 }
+variable "appgw_uai_id" {
+  type = list(string)
+}

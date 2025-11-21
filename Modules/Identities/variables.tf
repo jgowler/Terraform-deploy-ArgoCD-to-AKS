@@ -1,7 +1,10 @@
-variable "cluster_principal_id" {
+variable "appgw_principal_id" {
   type = string
 }
-variable "appgw_principal_id" {
+variable "cluster_identity_pi" {
+  type = string
+}
+variable "agic_principal_id" {
   type = string
 }
 variable "appgw_id" {

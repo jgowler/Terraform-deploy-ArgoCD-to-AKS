@@ -12,6 +12,9 @@ output "kube_config_raw" {
 output "cluster_id" {
   value = azurerm_kubernetes_cluster.aks.id
 }
-output "cluster_principal_id" {
+output "cluster_identity_pi" {
   value = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+}
+output "agic_principal_id" {
+  value = data.azurerm_user_assigned_identity.pod_identity_appgw.principal_id
 }

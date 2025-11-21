@@ -16,7 +16,7 @@ resource "azurerm_key_vault" "kv-aks" {
 resource "azurerm_key_vault_access_policy" "kvp-aks" {
   key_vault_id = azurerm_key_vault.kv-aks.id
   tenant_id    = var.tenant_id
-  object_id    = var.cluster_principal_id
+  object_id    = var.appgw_uai_id_pi
 
   secret_permissions = [
     "Get",
