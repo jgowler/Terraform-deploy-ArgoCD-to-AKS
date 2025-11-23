@@ -14,7 +14,7 @@ Terraform
 Azure CLI
 Helm
 ```
-Along with the above a `Service Principal` will be used to connect to Azure and deploy resources to an existing `Resource Group`. The purpose of this is to grant as few permissions to the subscription as possible whilst also allowing the SP to do what it needs to do.
+Along with the above a `Service Principal` will be used to connect to Azure and deploy resources to an existing `Resource Group`. The purpose of this is to grant as few permissions to the subscription as possible whilst also allowing the SP to do what it needs to do. The SP will also require `Reader` permissions to the subscription as the information of the ingresscontroller pod created in the cluster will need to be read to grant it permissions to the app gateway, resource group, and the vnet (see Identities module). 
 
 ---
 ## Test deployment information
