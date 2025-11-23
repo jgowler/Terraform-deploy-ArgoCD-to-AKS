@@ -27,7 +27,7 @@ This deployment project is set up to connect the AKS cluster to the Application 
 ### AKS > ArgoCD
 
 ArgoCD is deployed using the Helm chart available here: `https://argoproj.github.io/argo-helm`
-The ArgoCD module already has the Charts downloaded in case I wanted to modify the files but these files can be downloaded directly during the deployment by changing the code form this:
+The ArgoCD module already has the Charts downloaded in case I wanted to modify the files but these files can be downloaded directly during the deployment by changing the code from this:
 
 ```
 resource "helm_release" "argocd" {
