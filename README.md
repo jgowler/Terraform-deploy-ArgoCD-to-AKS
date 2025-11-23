@@ -3,6 +3,8 @@
 
 The reasson for this project is to create an AKS cluster and deploy ArgoCD using Helm and using a GitHub repository to deploy apps using GitOps.
 
+![Diagram](AKS-diagram.png)
+
 ---
 ## Tools:
 ---
